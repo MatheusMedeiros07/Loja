@@ -1,0 +1,122 @@
+﻿@model Loja.Application.Dtos.CompradorDto
+
+@{
+    ViewData["Title"] = "Editar Comprador";
+}
+
+<h1>Editar Comprador</h1>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="NomeRazaoSocial" class="control-label"></label>
+        <input asp-for="NomeRazaoSocial" class="form-control" />
+        <span asp-validation-for="NomeRazaoSocial" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Email" class="control-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Telefone" class="control-label"></label>
+        <input asp-for="Telefone" class="form-control" />
+        <span asp-validation-for="Telefone" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input asp-for="Bloqueado" class="form-check-input" />
+            <label asp-for="Bloqueado" class="form-check-label">Bloqueado</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="TipoPessoa" class="control-label"></label>
+        <select asp-for="TipoPessoa" class="form-control" id="TipoPessoa">
+            <option value="Fisica">Física</option>
+            <option value="Juridica">Jurídica</option>
+        </select>
+        <span asp-validation-for="TipoPessoa" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CpfCnpj" class="control-label"></label>
+        <input asp-for="CpfCnpj" class="form-control" />
+        <span asp-validation-for="CpfCnpj" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="InscricaoEstadual" class="control-label"></label>
+        <input asp-for="InscricaoEstadual" class="form-control" id="InscricaoEstadual" />
+        <span asp-validation-for="InscricaoEstadual" class="text-danger"></span>
+        <span class="form-text text-muted">Inscrição Estadual do Cliente, selecionar Isento caso assim for.</span>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input asp-for="Isento" class="form-check-input" id="IsentoCheckbox" />
+            <label asp-for="Isento" class="form-check-label">Isento</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            <input asp-for="InscricaoEstadualPessoaFisica" class="form-check-input" id="InscricaoEstadualPessoaFisicaCheckbox" />
+            <label asp-for="InscricaoEstadualPessoaFisica" class="form-check-label">Inscrição Estadual para Pessoa Física</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Genero" class="control-label"></label>
+        <input asp-for="Genero" class="form-control" />
+        <span asp-validation-for="Genero" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DataNascimento" class="control-label"></label>
+        <input asp-for="DataNascimento" class="form-control" />
+        <span asp-validation-for="DataNascimento" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Senha" class="control-label"></label>
+        <input asp-for="Senha" class="form-control" />
+        <span asp-validation-for="Senha" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="DataCadastro" class="control-label"></label>
+        <input asp-for="DataCadastro" class="form-control" readonly />
+    </div>
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+<div>
+    <a asp-action="Index">Voltar para a lista</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Aplicar máscara ao campo InscricaoEstadual
+            $('#InscricaoEstadual').mask('000.000.000-000'); // Permitir até 12 caracteres numéricos com máscara
+
+            function toggleInscricaoEstadual() {
+                var tipoPessoa = $('#TipoPessoa').val();
+                var isento = $('#IsentoCheckbox').prop('checked');
+                var inscricaoEstadualParaPessoaFisica = $('#InscricaoEstadualPessoaFisicaCheckbox').prop('checked');
+
+                if ((tipoPessoa === 'Juridica' || inscricaoEstadualParaPessoaFisica) && !isento) {
+                    $('#InscricaoEstadual').prop('disabled', false);
+                    $('#InscricaoEstadual').attr('required', 'required');
+                } else {
+                    $('#InscricaoEstadual').prop('disabled', true);
+                    $('#InscricaoEstadual').removeAttr('required');
+                    $('#InscricaoEstadual').val(''); // Limpa o campo se estiver desabilitado
+                    $('#InscricaoEstadual').closest('.form-group').find('.text-danger').text(''); // Remove mensagem de validação
+                }
+            }
+
+            // Attach event handlers
+            $('#TipoPessoa, #IsentoCheckbox, #InscricaoEstadualPessoaFisicaCheckbox').on('change', function () {
+                toggleInscricaoEstadual();
+            });
+
+            // Initial toggle call
+            toggleInscricaoEstadual();
+        });
+    </script>
+}
