@@ -1,0 +1,93 @@
+﻿@model Loja.Application.Dtos.CompradorDto
+
+@{
+    ViewData["Title"] = "Detalhes do Comprador";
+}
+
+<h1>Detalhes do Comprador</h1>
+
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+        <i class="fas fa-edit"></i> Editar
+    </a>
+</div>
+<br />
+
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.NomeRazaoSocial)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.NomeRazaoSocial)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Email)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Email)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Telefone)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Telefone)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.DataCadastro)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.DataCadastro)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Bloqueado)
+    </dt>
+    <dd class="col-sm-10">
+        <input type="checkbox" disabled @(Model.Bloqueado ? "checked" : "") />
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.TipoPessoa)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.TipoPessoa)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.CpfCnpj)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.CpfCnpj)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.InscricaoEstadual)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.InscricaoEstadual)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Isento)
+    </dt>
+    <dd class="col-sm-10">
+        <input type="checkbox" disabled @(Model.Isento ? "checked" : "") />
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.InscricaoEstadualPessoaFisica)
+    </dt>
+    <dd class="col-sm-10">
+        <input type="checkbox" disabled @(Model.InscricaoEstadualPessoaFisica ? "checked" : "") />
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Genero)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.Genero)
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.DataNascimento)
+    </dt>
+    <dd class="col-sm-10">
+        @Html.DisplayFor(model => model.DataNascimento)
+    </dd>
+</dl>
+
+<div>
+    <a asp-action="Index" class="btn btn-secondary">Voltar para a lista</a>
+</div>
