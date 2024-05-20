@@ -12,7 +12,7 @@ namespace Loja.WebApp.Controllers
 
         public async Task<IActionResult> Index(string nomeRazaoSocial, string email, string telefone, DateTime? dataCadastro, string bloqueado, int? page)
         {
-            var compradores = await _compradorService.GetAllCompradoresAsync() ?? new List<CompradorDto>();
+            var compradores = await _compradorService.GetAllCompradoresAsync() ?? [];
 
             if (!string.IsNullOrEmpty(nomeRazaoSocial))
             {
