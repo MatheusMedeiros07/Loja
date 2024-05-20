@@ -2,6 +2,11 @@
 
 @{
     ViewData["Title"] = "Gestão de Cadastro de Clientes";
+    var nomeRazaoSocial = ViewData["NomeRazaoSocial"]?.ToString();
+    var email = ViewData["Email"]?.ToString();
+    var telefone = ViewData["Telefone"]?.ToString();
+    var dataCadastro = ViewData["DataCadastro"]?.ToString();
+    var bloqueado = ViewData["Bloqueado"]?.ToString();
 }
 
 <h1>Compradores</h1>
@@ -17,32 +22,48 @@
 <!-- Formulário de Filtro -->
 <div id="filter-form" class="filter-form" style="display:none;">
     <h3>Filtrar Compradores</h3>
-    <form>
+    <form id="filter-form-fields" method="get" action="@Url.Action("Index", "Compradores")">
         <div class="mb-3">
             <label for="filter-name" class="form-label">Nome/Razão Social</label>
-            <input type="text" class="form-control" id="filter-name" placeholder="Nome ou Razão Social do Cliente">
+            <input type="text" class="form-control" id="filter-name" name="nomeRazaoSocial" placeholder="Nome ou Razão Social do Cliente" value="@nomeRazaoSocial">
         </div>
         <div class="mb-3">
             <label for="filter-email" class="form-label">E-mail</label>
-            <input type="email" class="form-control" id="filter-email" placeholder="E-mail do Cliente">
+            <input type="email" class="form-control" id="filter-email" name="email" placeholder="E-mail do Cliente" value="@email">
         </div>
         <div class="mb-3">
             <label for="filter-phone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="filter-phone" placeholder="Telefone do Cliente">
+            <input type="text" class="form-control" id="filter-phone" name="telefone" placeholder="Telefone do Cliente" value="@telefone">
         </div>
         <div class="mb-3">
             <label for="filter-date" class="form-label">Data de Cadastro</label>
-            <input type="date" class="form-control" id="filter-date" placeholder="Selecione uma data ou período">
+            <input type="date" class="form-control" id="filter-date" name="dataCadastro" placeholder="Selecione uma data ou período" value="@dataCadastro">
         </div>
         <div class="mb-3">
             <label for="filter-blocked" class="form-label">Cliente bloqueado</label>
-            <select class="form-select" id="filter-blocked">
+            <select class="form-select" id="filter-blocked" name="bloqueado">
                 <option value="">Selecione</option>
-                <option value="sim">SIM</option>
-                <option value="nao">NÃO</option>
+                @if (bloqueado == "sim")
+                {
+                    <option value="sim" selected>SIM</option>
+                    <option value="nao">NÃO</option>
+                }
+                else if (bloqueado == "nao")
+                {
+                    <option value="sim">SIM</option>
+                    <option value="nao" selected>NÃO</option>
+                }
+                else
+                {
+                    <option value="sim">SIM</option>
+                    <option value="nao">NÃO</option>
+                }
             </select>
         </div>
-        <button type="button" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+            <button type="button" class="btn btn-secondary" id="clear-filters">Limpar Filtros</button>
+        </div>
     </form>
 </div>
 
@@ -188,6 +209,19 @@
                     });
                 }
                 $('#confirmDeleteModal').modal('hide');
+            });
+
+            // Fechar o formulário de filtro ao clicar fora dele
+            $(document).click(function (event) {
+                var $target = $(event.target);
+                if (!$target.closest('#filter-form').length && !$target.closest('#filter-button').length && $('#filter-form').is(":visible")) {
+                    $('#filter-form').hide();
+                }
+            });
+
+            // Limpar os filtros ao clicar no botão "Limpar Filtros"
+            $('#clear-filters').click(function () {
+                $('#filter-form-fields').find('input[type="text"], input[type="email"], input[type="date"], select').val('');
             });
         });
     </script>
