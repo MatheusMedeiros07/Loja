@@ -8,14 +8,17 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <p>Consulte os seus Clientes cadastrados na sua Loja ou realize o cadastro de novos Cliente</p>
-    <a class="btn btn-primary" href="@Url.Action("Create", "Compradores")">Adicionar Cliente</a>
+    <div>
+        <a class="btn btn-primary" href="@Url.Action("Create", "Compradores")">Adicionar Cliente</a>
+        <button class="btn btn-danger" id="delete-selected">Deletar Selecionados</button>
+    </div>
 </div>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                <input type="checkbox" />
+                <input type="checkbox" id="select-all" />
             </th>
             <th>
                 Nome/Razão Social
@@ -40,7 +43,7 @@
         {
             <tr>
                 <td>
-                    <input type="checkbox" />
+                    <input type="checkbox" class="select-client" value="@item.Id" />
                 </td>
                 <td>
                     @item.NomeRazaoSocial
@@ -66,3 +69,41 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#select-all').click(function () {
+                var checkedStatus = this.checked;
+                $('.select-client').each(function () {
+                    this.checked = checkedStatus;
+                });
+            });
+
+            $('#delete-selected').click(function () {
+                var selectedIds = [];
+                $('.select-client:checked').each(function () {
+                    selectedIds.push(parseInt($(this).val()));
+                });
+
+                if (selectedIds.length > 0) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteSelected", "Compradores")',
+                        type: 'POST',
+                        data: JSON.stringify(selectedIds),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (result) {
+                            location.reload(); // Recarregar a página após a exclusão
+                        },
+                        error: function (err) {
+                            console.error("Erro ao deletar clientes: ", err);
+                        }
+                    });
+                } else {
+                    alert("Por favor, selecione pelo menos um cliente para deletar.");
+                }
+            });
+        });
+    </script>
+}

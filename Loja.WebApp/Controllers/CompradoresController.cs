@@ -124,7 +124,7 @@ namespace Loja.WebApp.Controllers
         }
 
         // POST: Compradores/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -134,17 +134,25 @@ namespace Loja.WebApp.Controllers
 
         // POST: Compradores/DeleteSelected
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteSelected(int[] selectedIds)
+        public async Task<IActionResult> DeleteSelected([FromBody] int[] selectedIds)
         {
-            if (selectedIds != null && selectedIds.Length > 0)
+            if (selectedIds == null || selectedIds.Length == 0)
             {
-                foreach (var id in selectedIds)
+                return BadRequest("Nenhum cliente selecionado para exclusão.");
+            }
+
+            Console.WriteLine("IDs recebidos: " + string.Join(", ", selectedIds));
+
+            foreach (var id in selectedIds)
+            {
+                var comprador = await _compradorService.GetCompradorByIdAsync(id);
+                if (comprador != null)
                 {
-                    await _compradorService.DeleteCompradorAsync(id);
+                    await _compradorService.DeleteCompradorAsync(comprador.Id);
                 }
             }
-            return RedirectToAction(nameof(Index));
+
+            return Ok();
         }
 
         private bool CompradorExists(int id)
