@@ -120,7 +120,11 @@
                 });
 
                 if (selectedIds.length > 0) {
-                    $('#confirmDeleteMessage').text(`Deseja excluir os registros dos clientes selecionados? Foram selecionados ${selectedIds.length} registros para exclusão`);
+                    if (selectedIds.length === 1) {
+                        $('#confirmDeleteMessage').text('Deseja excluir o registro do cliente selecionado?');
+                    } else {
+                        $('#confirmDeleteMessage').text(`Deseja excluir os registros dos clientes selecionados? Foram selecionados ${selectedIds.length} registros para exclusão`);
+                    }
                     $('#confirmDeleteModal').modal('show');
                 } else {
                     alert("Por favor, selecione pelo menos um cliente para deletar.");
