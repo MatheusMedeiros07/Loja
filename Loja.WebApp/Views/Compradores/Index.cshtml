@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Loja.Application.Dtos.CompradorDto>
 
 @{
-    ViewData["Title"] = "Compradores";
+    ViewData["Title"] = "Gestão de Cadastro de Clientes";
 }
 
 <h1>Compradores</h1>
@@ -101,6 +101,16 @@
                 $('.select-client').each(function () {
                     this.checked = checkedStatus;
                 });
+            });
+
+            $('.select-client').change(function () {
+                if (!this.checked) {
+                    $('#select-all').prop('checked', false);
+                } else {
+                    if ($('.select-client:checked').length === $('.select-client').length) {
+                        $('#select-all').prop('checked', true);
+                    }
+                }
             });
 
             $('#delete-selected').click(function () {
