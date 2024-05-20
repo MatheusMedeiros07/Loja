@@ -9,33 +9,46 @@ namespace Loja.WebApp.Controllers
     {
         private readonly ICompradorService _compradorService = compradorService;
 
-        // GET: Compradores
-        public async Task<IActionResult> Index(string searchNome, string searchEmail, string bloqueado)
+        public async Task<IActionResult> Index(string nomeRazaoSocial, string email, string telefone, DateTime? dataCadastro, string bloqueado)
         {
-            ViewData["searchNome"] = searchNome;
-            ViewData["searchEmail"] = searchEmail;
-            ViewData["bloqueado"] = bloqueado;
-
             var compradores = await _compradorService.GetAllCompradoresAsync();
 
-            if (!string.IsNullOrEmpty(searchNome))
+            if (!string.IsNullOrEmpty(nomeRazaoSocial))
             {
-                compradores = compradores.Where(c => c.NomeRazaoSocial.Contains(searchNome, StringComparison.OrdinalIgnoreCase)).ToList();
+                compradores = compradores.Where(c => c.NomeRazaoSocial.Contains(nomeRazaoSocial)).ToList();
+                ViewData["NomeRazaoSocial"] = nomeRazaoSocial;
             }
 
-            if (!string.IsNullOrEmpty(searchEmail))
+            if (!string.IsNullOrEmpty(email))
             {
-                compradores = compradores.Where(c => c.Email.Contains(searchEmail, StringComparison.OrdinalIgnoreCase)).ToList();
+                compradores = compradores.Where(c => c.Email.Contains(email)).ToList();
+                ViewData["Email"] = email;
+            }
+
+            if (!string.IsNullOrEmpty(telefone))
+            {
+                compradores = compradores.Where(c => c.Telefone.Contains(telefone)).ToList();
+                ViewData["Telefone"] = telefone;
+            }
+
+            if (dataCadastro.HasValue)
+            {
+                compradores = compradores.Where(c => c.DataCadastro.Date == dataCadastro.Value.Date).ToList();
+                ViewData["DataCadastro"] = dataCadastro.Value.ToString("yyyy-MM-dd");
             }
 
             if (!string.IsNullOrEmpty(bloqueado))
             {
-                bool isBloqueado = bool.Parse(bloqueado);
+                bool isBloqueado = bloqueado.ToLower() == "sim";
                 compradores = compradores.Where(c => c.Bloqueado == isBloqueado).ToList();
+                ViewData["Bloqueado"] = bloqueado;
             }
 
             return View(compradores);
         }
+        
+
+           
 
         // GET: Compradores/Details/5
         public async Task<IActionResult> Details(int id)
