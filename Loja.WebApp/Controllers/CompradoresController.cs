@@ -39,16 +39,13 @@ namespace Loja.WebApp.Controllers
 
             if (!string.IsNullOrEmpty(bloqueado))
             {
-                bool isBloqueado = bloqueado.ToLower() == "sim";
+                bool isBloqueado = string.Equals(bloqueado, "sim", StringComparison.OrdinalIgnoreCase);
                 compradores = compradores.Where(c => c.Bloqueado == isBloqueado).ToList();
                 ViewData["Bloqueado"] = bloqueado;
             }
 
             return View(compradores);
         }
-        
-
-           
 
         // GET: Compradores/Details/5
         public async Task<IActionResult> Details(int id)
