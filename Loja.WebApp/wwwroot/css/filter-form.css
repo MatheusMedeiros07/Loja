@@ -1,0 +1,12 @@
+/* Estilo para o formulário de filtro */
+.filter-form {
+    position: fixed;
+    right: 0;
+    top: 100px; /* Ajuste a posição vertical conforme necessário */
+    width: 300px; /* Ajuste a largura conforme necessário */
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1050; /* Certifique-se de que o formulário esteja acima de outros elementos */
+}

@@ -1,8 +1,197 @@
-﻿@{
-    ViewData["Title"] = "Página Inicial";
+﻿@model IEnumerable<Loja.Application.Dtos.CompradorDto>
+
+@{
+    ViewData["Title"] = "Gestão de Cadastro de Clientes";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Bem Vindo!</h1>
-    <p>Aplicação de Gestão de Clientes</p>
+<h1>Compradores</h1>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p>Consulte os seus Clientes cadastrados na sua Loja ou realize o cadastro de novos Cliente</p>
+    <div>
+        <a class="btn btn-primary" href="@Url.Action("Create", "Compradores")">Adicionar Cliente</a>
+        <button class="btn btn-danger" id="delete-selected">Deletar Selecionados</button>
+    </div>
 </div>
+
+<!-- Formulário de Filtro -->
+<div id="filter-form" class="filter-form" style="display:none;">
+    <h3>Filtrar Compradores</h3>
+    <form>
+        <div class="mb-3">
+            <label for="filter-name" class="form-label">Nome/Razão Social</label>
+            <input type="text" class="form-control" id="filter-name" placeholder="Nome ou Razão Social do Cliente">
+        </div>
+        <div class="mb-3">
+            <label for="filter-email" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="filter-email" placeholder="E-mail do Cliente">
+        </div>
+        <div class="mb-3">
+            <label for="filter-phone" class="form-label">Telefone</label>
+            <input type="text" class="form-control" id="filter-phone" placeholder="Telefone do Cliente">
+        </div>
+        <div class="mb-3">
+            <label for="filter-date" class="form-label">Data de Cadastro</label>
+            <input type="date" class="form-control" id="filter-date" placeholder="Selecione uma data ou período">
+        </div>
+        <div class="mb-3">
+            <label for="filter-blocked" class="form-label">Cliente bloqueado</label>
+            <select class="form-select" id="filter-blocked">
+                <option value="">Selecione</option>
+                <option value="sim">SIM</option>
+                <option value="nao">NÃO</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <input type="checkbox" id="select-all" />
+            </th>
+            <th>
+                Nome/Razão Social
+            </th>
+            <th>
+                E-mail
+            </th>
+            <th>
+                Telefone
+            </th>
+            <th>
+                Data de Cadastro
+            </th>
+            <th>
+                Bloqueado
+            </th>
+            <th>
+                <button class="btn btn-secondary" id="filter-button">Filtrar</button>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" class="select-client" value="@item.Id" />
+                    </td>
+                    <td>
+                        @item.NomeRazaoSocial
+                    </td>
+                    <td>
+                        @item.Email
+                    </td>
+                    <td>
+                        <!-- Aqui você pode adicionar o campo de telefone se estiver presente no DTO -->
+                    </td>
+                    <td>
+                        @item.DataCadastro.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        <input type="checkbox" @(item.Bloqueado ? "checked" : "") />
+                    </td>
+                    <td>
+                        <a class="btn btn-info" href="@Url.Action("Details", "Compradores", new { id = item.Id })">Detalhes</a>
+                        <a class="btn btn-warning" href="@Url.Action("Edit", "Compradores", new { id = item.Id })">Editar</a>
+                        <a class="btn btn-danger" href="@Url.Action("Delete", "Compradores", new { id = item.Id })">Deletar</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Modal de confirmação -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmação de Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmDeleteMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let selectedIds = [];
+
+            $('#select-all').click(function () {
+                var checkedStatus = this.checked;
+                $('.select-client').each(function () {
+                    this.checked = checkedStatus;
+                });
+            });
+
+            $('.select-client').change(function () {
+                if (!this.checked) {
+                    $('#select-all').prop('checked', false);
+                } else {
+                    if ($('.select-client:checked').length === $('.select-client').length) {
+                        $('#select-all').prop('checked', true);
+                    }
+                }
+            });
+
+            $('#filter-button').click(function () {
+                $('#filter-form').toggle(); // Mostrar ou esconder o formulário de filtro
+            });
+
+            $('#delete-selected').click(function () {
+                selectedIds = [];
+                $('.select-client:checked').each(function () {
+                    selectedIds.push(parseInt($(this).val()));
+                });
+
+                if (selectedIds.length > 0) {
+                    if (selectedIds.length === 1) {
+                        $('#confirmDeleteMessage').text('Deseja excluir o registro do cliente selecionado?');
+                    } else {
+                        $('#confirmDeleteMessage').text(`Deseja excluir os registros dos clientes selecionados? Foram selecionados ${selectedIds.length} registros para exclusão`);
+                    }
+                    $('#confirmDeleteModal').modal('show');
+                } else {
+                    alert("Por favor, selecione pelo menos um cliente para deletar.");
+                }
+            });
+
+            $('#confirmDeleteButton').click(function () {
+                if (selectedIds.length > 0) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteSelected", "Compradores")',
+                        type: 'POST',
+                        data: JSON.stringify(selectedIds),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (result) {
+                            location.reload(); // Recarregar a página após a exclusão
+                        },
+                        error: function (err) {
+                            console.error("Erro ao deletar clientes: ", err);
+                        }
+                    });
+                }
+                $('#confirmDeleteModal').modal('hide');
+            });
+        });
+    </script>
+}
+
+<!-- Referência ao novo arquivo CSS -->
+<link rel="stylesheet" href="~/css/filter-form.css" />
