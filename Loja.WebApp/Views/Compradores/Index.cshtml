@@ -42,7 +42,10 @@
                 <option value="nao">NÃO</option>
             </select>
         </div>
-        <button type="button" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+        <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
+            <button type="button" class="btn btn-secondary" id="clear-filters">Limpar Filtros</button>
+        </div>
     </form>
 </div>
 
@@ -188,6 +191,23 @@
                     });
                 }
                 $('#confirmDeleteModal').modal('hide');
+            });
+
+            // Fechar o formulário de filtro ao clicar fora dele
+            $(document).click(function (event) {
+                var $target = $(event.target);
+                if (!$target.closest('#filter-form').length && !$target.closest('#filter-button').length && $('#filter-form').is(":visible")) {
+                    $('#filter-form').hide();
+                }
+            });
+
+            // Limpar os filtros ao clicar no botão "Limpar Filtros"
+            $('#clear-filters').click(function () {
+                $('#filter-name').val('');
+                $('#filter-email').val('');
+                $('#filter-phone').val('');
+                $('#filter-date').val('');
+                $('#filter-blocked').val('');
             });
         });
     </script>
