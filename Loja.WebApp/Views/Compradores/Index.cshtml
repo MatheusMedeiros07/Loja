@@ -1,112 +1,68 @@
 ﻿@model IEnumerable<Loja.Application.Dtos.CompradorDto>
 
 @{
-    ViewData["Title"] = "Index";
-    var searchNome = ViewBag.SearchNome;
-    var searchEmail = ViewBag.SearchEmail;
-    var bloqueado = ViewBag.Bloqueado as string;
+    ViewData["Title"] = "Compradores";
 }
 
 <h1>Compradores</h1>
 
-<form asp-action="Index" method="get">
-    <div class="form-group">
-        <label for="searchNome">Nome/Razão Social:</label>
-        <input type="text" name="searchNome" id="searchNome" class="form-control" value="@searchNome" />
-    </div>
-    <div class="form-group">
-        <label for="searchEmail">Email:</label>
-        <input type="text" name="searchEmail" id="searchEmail" class="form-control" value="@searchEmail" />
-    </div>
-    <div class="form-group">
-        <label>Cliente bloqueado:</label>
-        <select name="bloqueado" class="form-control">
-            <option value="" selected="@((bloqueado == null) ? "selected" : "")">Todos</option>
-            <option value="true" selected="@((bloqueado == "true") ? "selected" : "")">Sim</option>
-            <option value="false" selected="@((bloqueado == "false") ? "selected" : "")">Não</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a asp-action="Index" class="btn btn-secondary">Limpar Filtros</a>
-    </div>
-</form>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <p>Consulte os seus Clientes cadastrados na sua Loja ou realize o cadastro de novos Cliente</p>
+    <a class="btn btn-primary" href="@Url.Action("Create", "Compradores")">Adicionar Cliente</a>
+</div>
 
-<form asp-action="DeleteSelected" method="post">
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Adicionar Comprador</a>
-        <button type="submit" class="btn btn-danger" id="deleteSelectedButton">Deletar Selecionados</button>
-    </p>
-
-    <table class="table">
-        <thead>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <input type="checkbox" />
+            </th>
+            <th>
+                Nome/Razão Social
+            </th>
+            <th>
+                E-mail
+            </th>
+            <th>
+                Telefone
+            </th>
+            <th>
+                Data de Cadastro
+            </th>
+            <th>
+                Bloqueado
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
             <tr>
-                <th>
-                    <input type="checkbox" id="selectAllCheckbox" />
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.First().NomeRazaoSocial)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.First().Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.First().Telefone)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.First().DataCadastro)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.First().Bloqueado)
-                </th>
-                <th></th>
+                <td>
+                    <input type="checkbox" />
+                </td>
+                <td>
+                    @item.NomeRazaoSocial
+                </td>
+                <td>
+                    @item.Email
+                </td>
+                <td>
+                    <!-- Aqui você pode adicionar o campo de telefone se estiver presente no DTO -->
+                </td>
+                <td>
+                    @item.DataCadastro.ToString("dd/MM/yyyy")
+                </td>
+                <td>
+                    <input type="checkbox" @(item.Bloqueado ? "checked" : "") />
+                </td>
+                <td>
+                    <a class="btn btn-info" href="@Url.Action("Details", "Compradores", new { id = item.Id })">Detalhes</a>
+                    <a class="btn btn-warning" href="@Url.Action("Edit", "Compradores", new { id = item.Id })">Editar</a>
+                    <a class="btn btn-danger" href="@Url.Action("Delete", "Compradores", new { id = item.Id })">Deletar</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        <input type="checkbox" name="selectedIds" value="@item.Id" class="selectCheckbox" />
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NomeRazaoSocial)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Telefone)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DataCadastro)
-                    </td>
-                    <td>
-                        <input type="checkbox" disabled @(item.Bloqueado ? "checked" : "") />
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Detalhes</a> |
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Editar</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Deletar</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</form>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $("#selectAllCheckbox").click(function () {
-                $(".selectCheckbox").prop('checked', $(this).prop('checked'));
-            });
-
-            $(".selectCheckbox").click(function () {
-                if (!$(this).prop("checked")) {
-                    $("#selectAllCheckbox").prop("checked", false);
-                }
-            });
-        });
-    </script>
-}
+        }
+    </tbody>
+</table>

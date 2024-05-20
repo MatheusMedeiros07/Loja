@@ -3,155 +3,153 @@ using Loja.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-public class CompradoresController : Controller
+namespace Loja.WebApp.Controllers
 {
-    private readonly ICompradorService _compradorService;
-
-    public CompradoresController(ICompradorService compradorService)
+    public class CompradoresController(ICompradorService compradorService) : Controller
     {
-        _compradorService = compradorService;
-    }
+        private readonly ICompradorService _compradorService = compradorService;
 
-    // GET: Compradores
-    public async Task<IActionResult> Index(string searchNome, string searchEmail, string bloqueado)
-    {
-        ViewData["searchNome"] = searchNome;
-        ViewData["searchEmail"] = searchEmail;
-        ViewData["bloqueado"] = bloqueado;
-
-        var compradores = await _compradorService.GetAllCompradoresAsync();
-
-        if (!string.IsNullOrEmpty(searchNome))
+        // GET: Compradores
+        public async Task<IActionResult> Index(string searchNome, string searchEmail, string bloqueado)
         {
-            compradores = compradores.Where(c => c.NomeRazaoSocial.Contains(searchNome, StringComparison.OrdinalIgnoreCase)).ToList();
+            ViewData["searchNome"] = searchNome;
+            ViewData["searchEmail"] = searchEmail;
+            ViewData["bloqueado"] = bloqueado;
+
+            var compradores = await _compradorService.GetAllCompradoresAsync();
+
+            if (!string.IsNullOrEmpty(searchNome))
+            {
+                compradores = compradores.Where(c => c.NomeRazaoSocial.Contains(searchNome, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(searchEmail))
+            {
+                compradores = compradores.Where(c => c.Email.Contains(searchEmail, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(bloqueado))
+            {
+                bool isBloqueado = bool.Parse(bloqueado);
+                compradores = compradores.Where(c => c.Bloqueado == isBloqueado).ToList();
+            }
+
+            return View(compradores);
         }
 
-        if (!string.IsNullOrEmpty(searchEmail))
+        // GET: Compradores/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            compradores = compradores.Where(c => c.Email.Contains(searchEmail, StringComparison.OrdinalIgnoreCase)).ToList();
+            var comprador = await _compradorService.GetCompradorByIdAsync(id);
+            if (comprador == null)
+            {
+                return NotFound();
+            }
+
+            return View(comprador);
         }
 
-        if (!string.IsNullOrEmpty(bloqueado))
+        // GET: Compradores/Create
+        public IActionResult Create()
         {
-            bool isBloqueado = bool.Parse(bloqueado);
-            compradores = compradores.Where(c => c.Bloqueado == isBloqueado).ToList();
+            return View();
         }
 
-        return View(compradores);
-    }
-
-    // GET: Compradores/Details/5
-    public async Task<IActionResult> Details(int id)
-    {
-        var comprador = await _compradorService.GetCompradorByIdAsync(id);
-        if (comprador == null)
+        // POST: Compradores/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CompradorDto compradorDto)
         {
-            return NotFound();
+            if (ModelState.IsValid)
+            {
+                await _compradorService.AddCompradorAsync(compradorDto);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(compradorDto);
         }
 
-        return View(comprador);
-    }
-
-    // GET: Compradores/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: Compradores/Create
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CompradorDto compradorDto)
-    {
-        if (ModelState.IsValid)
+        // GET: Compradores/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
-            await _compradorService.AddCompradorAsync(compradorDto);
+            var comprador = await _compradorService.GetCompradorByIdAsync(id);
+            if (comprador == null)
+            {
+                return NotFound();
+            }
+            return View(comprador);
+        }
+
+        // POST: Compradores/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, CompradorDto compradorDto)
+        {
+            if (id != compradorDto.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _compradorService.UpdateCompradorAsync(compradorDto);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CompradorExists(compradorDto.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(compradorDto);
+        }
+
+        // GET: Compradores/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var comprador = await _compradorService.GetCompradorByIdAsync(id);
+            if (comprador == null)
+            {
+                return NotFound();
+            }
+
+            return View(comprador);
+        }
+
+        // POST: Compradores/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _compradorService.DeleteCompradorAsync(id);
             return RedirectToAction(nameof(Index));
         }
-        return View(compradorDto);
-    }
 
-    // GET: Compradores/Edit/5
-    public async Task<IActionResult> Edit(int id)
-    {
-        var comprador = await _compradorService.GetCompradorByIdAsync(id);
-        if (comprador == null)
+        // POST: Compradores/DeleteSelected
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSelected(int[] selectedIds)
         {
-            return NotFound();
-        }
-        return View(comprador);
-    }
-
-    // POST: Compradores/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CompradorDto compradorDto)
-    {
-        if (id != compradorDto.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
+            if (selectedIds != null && selectedIds.Length > 0)
             {
-                await _compradorService.UpdateCompradorAsync(compradorDto);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CompradorExists(compradorDto.Id))
+                foreach (var id in selectedIds)
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
+                    await _compradorService.DeleteCompradorAsync(id);
                 }
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(compradorDto);
-    }
 
-    // GET: Compradores/Delete/5
-    public async Task<IActionResult> Delete(int id)
-    {
-        var comprador = await _compradorService.GetCompradorByIdAsync(id);
-        if (comprador == null)
+        private bool CompradorExists(int id)
         {
-            return NotFound();
+            return _compradorService.GetCompradorByIdAsync(id) != null;
         }
-
-        return View(comprador);
-    }
-
-    // POST: Compradores/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        await _compradorService.DeleteCompradorAsync(id);
-        return RedirectToAction(nameof(Index));
-    }
-
-    // POST: Compradores/DeleteSelected
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteSelected(int[] selectedIds)
-    {
-        if (selectedIds != null && selectedIds.Length > 0)
-        {
-            foreach (var id in selectedIds)
-            {
-                await _compradorService.DeleteCompradorAsync(id);
-            }
-        }
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool CompradorExists(int id)
-    {
-        return _compradorService.GetCompradorByIdAsync(id) != null;
     }
 }
