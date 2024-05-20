@@ -1,7 +1,4 @@
-﻿using Loja.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
-
-namespace Loja.Application.Dtos
+﻿namespace Loja.Application.Dtos
 {
     public class CompradorDto
     {
@@ -18,6 +15,7 @@ namespace Loja.Application.Dtos
         public string? Genero { get; set; }
         public DateTime? DataNascimento { get; set; }
         public string Senha { get; set; }
-        public bool InscricaoEstadualPessoaFisica { get; set; } 
+        public bool InscricaoEstadualPessoaFisica { get; set; }
+        public string ConfirmacaoSenha { get; set; } // Adicionado
     }
 }
