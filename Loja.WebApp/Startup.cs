@@ -10,61 +10,59 @@ using Loja.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
-public class Startup
+namespace Loja.WebApp
 {
-    public IConfiguration Configuration { get; }
-
-    public Startup(IConfiguration configuration)
+    public class Startup(IConfiguration configuration)
     {
-        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-    }
+        public IConfiguration Configuration { get; } = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllersWithViews();
-
-        // Obter a connection string da variável de ambiente
-        string? connectionString = Configuration["CONNECTION_STRING_DB_LOJA"];
-        if (string.IsNullOrEmpty(connectionString))
+        public void ConfigureServices(IServiceCollection services)
         {
-            throw new InvalidOperationException("Connection string 'CONNECTION_STRING_DB_LOJA' not found.");
+            services.AddControllersWithViews();
+
+            // Obter a connection string da variável de ambiente
+            string? connectionString = Configuration["CONNECTION_STRING_DB_LOJA"];
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string 'CONNECTION_STRING_DB_LOJA' not found.");
+            }
+
+            // Configurar o ApplicationDbContext
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21))));
+
+            // Registrar serviços e repositórios
+            services.AddScoped<ICompradorService, CompradorService>();
+            services.AddScoped<ICompradorRepository, CompradorRepository>();
         }
 
-        // Configurar o ApplicationDbContext
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21))));
-
-        // Registrar serviços e repositórios
-        services.AddScoped<ICompradorService, CompradorService>();
-        services.AddScoped<ICompradorRepository, CompradorRepository>();
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (!env.IsDevelopment())
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Configura o manipulador de exceções e HSTS para ambientes de produção
-            app.UseExceptionHandler("/Home/Error");
-            app.UseHsts();
+            if (!env.IsDevelopment())
+            {
+                // Configura o manipulador de exceções e HSTS para ambientes de produção
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+            else
+            {
+                // Configura a página de detalhes de exceções para ambientes de desenvolvimento
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Compradores}/{action=Index}/{id?}");
+            });
         }
-        else
-        {
-            // Configura a página de detalhes de exceções para ambientes de desenvolvimento
-            app.UseDeveloperExceptionPage();
-        }
-
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-
-        app.UseRouting();
-
-        app.UseAuthorization();
-
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
-        });
     }
 }
