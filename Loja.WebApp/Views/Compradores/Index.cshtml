@@ -23,25 +23,41 @@
 <div id="filter-form" class="filter-form" style="display:none;">
     <h3>Filtrar Compradores</h3>
     <form id="filter-form-fields" method="get" action="@Url.Action("Index", "Compradores")">
-        <div class="mb-3">
-            <label for="filter-name" class="form-label">Nome/Razão Social</label>
-            <input type="text" class="form-control" id="filter-name" name="nomeRazaoSocial" placeholder="Nome ou Razão Social do Cliente" value="@nomeRazaoSocial">
+        <div class="mb-3 d-flex align-items-center">
+            <label for="filter-name" class="form-label me-2">Nome/Razão Social</label>
+            <input type="text" class="form-control me-2" id="filter-name" name="nomeRazaoSocial" placeholder="Nome ou Razão Social do Cliente" value="@nomeRazaoSocial">
+            @if (!string.IsNullOrEmpty(nomeRazaoSocial))
+            {
+                <button type="button" class="btn btn-link text-danger remove-filter" data-filter="filter-name">X</button>
+            }
         </div>
-        <div class="mb-3">
-            <label for="filter-email" class="form-label">E-mail</label>
-            <input type="email" class="form-control" id="filter-email" name="email" placeholder="E-mail do Cliente" value="@email">
+        <div class="mb-3 d-flex align-items-center">
+            <label for="filter-email" class="form-label me-2">E-mail</label>
+            <input type="email" class="form-control me-2" id="filter-email" name="email" placeholder="E-mail do Cliente" value="@email">
+            @if (!string.IsNullOrEmpty(email))
+            {
+                <button type="button" class="btn btn-link text-danger remove-filter" data-filter="filter-email">X</button>
+            }
         </div>
-        <div class="mb-3">
-            <label for="filter-phone" class="form-label">Telefone</label>
-            <input type="text" class="form-control" id="filter-phone" name="telefone" placeholder="Telefone do Cliente" value="@telefone">
+        <div class="mb-3 d-flex align-items-center">
+            <label for="filter-phone" class="form-label me-2">Telefone</label>
+            <input type="text" class="form-control me-2" id="filter-phone" name="telefone" placeholder="Telefone do Cliente" value="@telefone">
+            @if (!string.IsNullOrEmpty(telefone))
+            {
+                <button type="button" class="btn btn-link text-danger remove-filter" data-filter="filter-phone">X</button>
+            }
         </div>
-        <div class="mb-3">
-            <label for="filter-date" class="form-label">Data de Cadastro</label>
-            <input type="date" class="form-control" id="filter-date" name="dataCadastro" placeholder="Selecione uma data ou período" value="@dataCadastro">
+        <div class="mb-3 d-flex align-items-center">
+            <label for="filter-date" class="form-label me-2">Data de Cadastro</label>
+            <input type="date" class="form-control me-2" id="filter-date" name="dataCadastro" placeholder="Selecione uma data ou período" value="@dataCadastro">
+            @if (!string.IsNullOrEmpty(dataCadastro))
+            {
+                <button type="button" class="btn btn-link text-danger remove-filter" data-filter="filter-date">X</button>
+            }
         </div>
-        <div class="mb-3">
-            <label for="filter-blocked" class="form-label">Cliente bloqueado</label>
-            <select class="form-select" id="filter-blocked" name="bloqueado">
+        <div class="mb-3 d-flex align-items-center">
+            <label for="filter-blocked" class="form-label me-2">Cliente bloqueado</label>
+            <select class="form-select me-2" id="filter-blocked" name="bloqueado">
                 <option value="">Selecione</option>
                 @if (bloqueado == "sim")
                 {
@@ -59,6 +75,10 @@
                     <option value="nao">NÃO</option>
                 }
             </select>
+            @if (!string.IsNullOrEmpty(bloqueado))
+            {
+                <button type="button" class="btn btn-link text-danger remove-filter" data-filter="filter-blocked">X</button>
+            }
         </div>
         <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-primary" id="apply-filters">Aplicar Filtros</button>
@@ -224,6 +244,13 @@
                 $('#filter-form-fields').find('input[type="text"], input[type="email"], input[type="date"], select').val('');
                 // Resetar a URL para remover os parâmetros de filtro
                 window.location.href = '@Url.Action("Index", "Compradores")';
+            });
+
+            // Remover um filtro específico ao clicar no botão de exclusão
+            $('.remove-filter').click(function () {
+                var filterId = $(this).data('filter');
+                $('#' + filterId).val('');
+                $('#filter-form-fields').submit();
             });
         });
     </script>
