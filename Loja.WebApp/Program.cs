@@ -1,3 +1,5 @@
+using Loja.WebApp;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona o Startup explicitamente
