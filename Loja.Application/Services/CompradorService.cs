@@ -7,14 +7,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Loja.Application.Services
 {
-    public class CompradorService : ICompradorService
+    public class CompradorService(ICompradorRepository compradorRepository) : ICompradorService
     {
-        private readonly ICompradorRepository _compradorRepository;
-
-        public CompradorService(ICompradorRepository compradorRepository)
-        {
-            _compradorRepository = compradorRepository;
-        }
+        private readonly ICompradorRepository _compradorRepository = compradorRepository;
 
         public async Task<List<CompradorDto>> GetAllCompradoresAsync()
         {
