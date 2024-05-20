@@ -2,6 +2,7 @@ using Loja.Application.Dtos;
 using Loja.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace Loja.WebApp.Controllers
 {
@@ -9,9 +10,9 @@ namespace Loja.WebApp.Controllers
     {
         private readonly ICompradorService _compradorService = compradorService;
 
-        public async Task<IActionResult> Index(string nomeRazaoSocial, string email, string telefone, DateTime? dataCadastro, string bloqueado)
+        public async Task<IActionResult> Index(string nomeRazaoSocial, string email, string telefone, DateTime? dataCadastro, string bloqueado, int? page)
         {
-            var compradores = await _compradorService.GetAllCompradoresAsync();
+            var compradores = await _compradorService.GetAllCompradoresAsync() ?? new List<CompradorDto>();
 
             if (!string.IsNullOrEmpty(nomeRazaoSocial))
             {
@@ -44,9 +45,12 @@ namespace Loja.WebApp.Controllers
                 ViewData["Bloqueado"] = bloqueado;
             }
 
-            return View(compradores);
-        }
+            int pageSize = 20;
+            int pageNumber = (page ?? 1);
+            var pagedCompradores = compradores.ToPagedList(pageNumber, pageSize);
 
+            return View(pagedCompradores);
+        }
         // GET: Compradores/Details/5
         public async Task<IActionResult> Details(int id)
         {

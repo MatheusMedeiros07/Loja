@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Loja.Application.Dtos.CompradorDto>
+﻿@using X.PagedList
+@model IPagedList<Loja.Application.Dtos.CompradorDto>
 
 @{
     ViewData["Title"] = "Gestão de Cadastro de Clientes";
@@ -114,7 +115,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (Model != null)
+        @if (Model != null && Model.Any())
         {
             @foreach (var item in Model)
             {
@@ -145,8 +146,37 @@
                 </tr>
             }
         }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center">Nenhum comprador encontrado</td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Paginação -->
+@if (Model != null && Model.Any())
+{
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })" tabindex="-1">Anterior</a>
+                </li>
+                @for (var i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}
 
 <!-- Modal de confirmação -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
