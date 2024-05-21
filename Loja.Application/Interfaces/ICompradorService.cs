@@ -9,5 +9,8 @@ namespace Loja.Application.Interfaces
         Task AddCompradorAsync(CompradorDto comprador);
         Task UpdateCompradorAsync(CompradorDto comprador);
         Task DeleteCompradorAsync(int id);
+        Task<bool> CpfCnpjExistsAsync(string cpfCnpj);
+        Task<bool> EmailExistsAsync(string email);
+        Task<bool> InscricaoEstadualExistsAsync(string inscricaoEstadual);
     }
 }

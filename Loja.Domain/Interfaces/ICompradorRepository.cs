@@ -14,5 +14,8 @@ namespace Loja.Domain.Interfaces
         Task AddAsync(Comprador comprador);
         Task UpdateAsync(Comprador comprador);
         Task DeleteAsync(int id);
+        Task<bool> CpfCnpjExistsAsync(string cpfCnpj);
+        Task<bool> EmailExistsAsync(string email);
+        Task<bool> InscricaoEstadualExistsAsync(string inscricaoEstadual);
     }
 }
