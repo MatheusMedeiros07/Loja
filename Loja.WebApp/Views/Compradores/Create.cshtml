@@ -75,6 +75,12 @@
                 <span asp-validation-for="DataNascimento" class="text-danger"></span>
             </div>
 
+            <h4>Situação do Cliente</h4>
+            <div class="form-group">
+                <input asp-for="Bloqueado" class="form-check-input" type="checkbox" data-toggle="tooltip" title="Bloqueio o acesso do Cliente na sua Loja" />
+                <label asp-for="Bloqueado" class="form-check-label">Bloqueado</label>
+            </div>
+
             <h4>Senha de Acesso</h4>
             <div class="form-group">
                 <label asp-for="Senha" class="control-label">Senha</label>
@@ -87,10 +93,6 @@
                 <span asp-validation-for="ConfirmacaoSenha" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <input asp-for="Bloqueado" class="form-check-input" type="checkbox" data-toggle="tooltip" title="Bloqueio o acesso do Cliente na sua Loja" />
-                <label asp-for="Bloqueado" class="form-check-label">Bloqueado</label>
-            </div>
             <div class="form-group">
                 <input type="submit" value="Salvar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary">Voltar para a lista</a>
@@ -126,6 +128,7 @@
                     $('.juridica-only').show();
                     $('#divPossuiInscricaoEstadual').hide();
                     $('#divInscricaoEstadual').show();
+                    $('input[name="Isento"]').val('False');
                 }
                 $('#cpfCnpjError').text(''); // Clear error message
                 $('#inscricaoEstadualError').text(''); // Clear error message
