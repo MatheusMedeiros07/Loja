@@ -18,6 +18,5 @@ namespace Loja.Domain.Entities
         public Genero? Genero { get; set; }
         public DateTime? DataNascimento { get; set; }
         public string Senha { get; set; }
-        public bool InscricaoEstadualPessoaFisica { get; set; } 
     }
 }
