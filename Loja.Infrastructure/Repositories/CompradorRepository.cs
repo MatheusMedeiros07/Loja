@@ -10,14 +10,9 @@ using System.Threading.Tasks;
 
 namespace Loja.Infrastructure.Repositories
 {
-    public class CompradorRepository : ICompradorRepository
+    public class CompradorRepository(ApplicationDbContext context) : ICompradorRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public CompradorRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         public async Task<List<Comprador>> GetAllAsync()
         {
@@ -31,8 +26,36 @@ namespace Loja.Infrastructure.Repositories
 
         public async Task AddAsync(Comprador comprador)
         {
-            await _context.Compradores.AddAsync(comprador);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Compradores.AddAsync(comprador);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Log the exception
+                throw new Exception("Erro ao adicionar comprador: " + dbEx.InnerException?.Message ?? dbEx.Message, dbEx);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                throw new Exception("Erro ao adicionar comprador: " + ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> CpfCnpjExistsAsync(string cpfCnpj)
+        {
+            return await _context.Compradores.AnyAsync(c => c.CpfCnpj == cpfCnpj);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Compradores.AnyAsync(c => c.Email == email);
+        }
+
+        public async Task<bool> InscricaoEstadualExistsAsync(string inscricaoEstadual)
+        {
+            return await _context.Compradores.AnyAsync(c => c.InscricaoEstadual == inscricaoEstadual);
         }
 
         public async Task UpdateAsync(Comprador comprador)

@@ -2,6 +2,7 @@ using Loja.Application.Dtos;
 using Loja.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using X.PagedList;
 
 namespace Loja.WebApp.Controllers
@@ -69,17 +70,45 @@ namespace Loja.WebApp.Controllers
             return View();
         }
 
-        // POST: Compradores/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CompradorDto compradorDto)
+        public async Task<IActionResult> Create(CompradorDto comprador)
         {
             if (ModelState.IsValid)
             {
-                await _compradorService.AddCompradorAsync(compradorDto);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _compradorService.AddCompradorAsync(comprador);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (AggregateException aggEx)
+                {
+                    foreach (var ex in aggEx.InnerExceptions)
+                    {
+                        if (ex.Message.Contains("CPF/CNPJ"))
+                        {
+                            ModelState.AddModelError("CpfCnpj", ex.Message);
+                        }
+                        else if (ex.Message.Contains("e-mail"))
+                        {
+                            ModelState.AddModelError("Email", ex.Message);
+                        }
+                        else if (ex.Message.Contains("Inscrição Estadual"))
+                        {
+                            ModelState.AddModelError("InscricaoEstadual", ex.Message);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", ex.Message);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Ocorreu um erro ao tentar adicionar o cliente. Por favor, tente novamente.");
+                }
             }
-            return View(compradorDto);
+            return View(comprador);
         }
 
         // GET: Compradores/Edit/5

@@ -61,6 +61,28 @@ namespace Loja.Application.Services
 
         public async Task AddCompradorAsync(CompradorDto compradorDto)
         {
+            var errors = new List<string>();
+
+            if (await _compradorRepository.CpfCnpjExistsAsync(compradorDto.CpfCnpj))
+            {
+                errors.Add("Este CPF/CNPJ já está cadastrado para outro Cliente");
+            }
+
+            if (await _compradorRepository.EmailExistsAsync(compradorDto.Email))
+            {
+                errors.Add("Este e-mail já está cadastrado para outro Cliente");
+            }
+
+            if (!compradorDto.Isento && !string.IsNullOrEmpty(compradorDto.InscricaoEstadual) && await _compradorRepository.InscricaoEstadualExistsAsync(compradorDto.InscricaoEstadual))
+            {
+                errors.Add("Esta Inscrição Estadual já está cadastrada para outro Cliente");
+            }
+
+            if (errors.Any())
+            {
+                throw new AggregateException(errors.Select(e => new Exception(e)).ToList());
+            }
+
             var comprador = new Comprador
             {
                 NomeRazaoSocial = compradorDto.NomeRazaoSocial,
@@ -79,6 +101,21 @@ namespace Loja.Application.Services
             };
 
             await _compradorRepository.AddAsync(comprador);
+        }
+
+        public async Task<bool> CpfCnpjExistsAsync(string cpfCnpj)
+        {
+            return await _compradorRepository.CpfCnpjExistsAsync(cpfCnpj);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _compradorRepository.EmailExistsAsync(email);
+        }
+
+        public async Task<bool> InscricaoEstadualExistsAsync(string inscricaoEstadual)
+        {
+            return await _compradorRepository.InscricaoEstadualExistsAsync(inscricaoEstadual);
         }
 
         public async Task UpdateCompradorAsync(CompradorDto compradorDto)
