@@ -4,7 +4,7 @@
     ViewData["Title"] = "Cadastrar Novo Comprador";
 }
 
-<h1>Cadastrar Novo Comprador</h1>
+<h1>Cadastrar Novo Comprajador</h1>
 
 <h4>Comprador</h4>
 <hr />
@@ -37,8 +37,9 @@
             </div>
             <div class="form-group">
                 <label id="cpfCnpjLabel" asp-for="CpfCnpj" class="control-label">CPF/CNPJ</label>
-                <input asp-for="CpfCnpj" class="form-control" data-toggle="tooltip" title="Insira o CPF ou o CNPJ do Cliente" />
+                <input asp-for="CpfCnpj" id="CpfCnpj" class="form-control" data-toggle="tooltip" title="Insira o CPF ou o CNPJ do Cliente" />
                 <span asp-validation-for="CpfCnpj" class="text-danger"></span>
+                <span id="cpfCnpjError" class="text-danger"></span>
             </div>
             <div class="form-group fisica-only">
                 <label class="control-label">Possui Inscrição Estadual para Pessoa Física?</label>
@@ -119,6 +120,7 @@
                     $('#InscricaoEstadual').closest('.form-group').show();
                     $('#Isento').val(false); // Set Isento to false for Juridica
                 }
+                $('#cpfCnpjError').text('');
             }).trigger('change');
 
             $('#possuiInscricaoEstadual').change(function () {
@@ -138,6 +140,14 @@
                 }
             }).trigger('change');
 
+            $('#CpfCnpj').on('blur', function () {
+                if ($('#CpfCnpj').val().replace(/\D/g, '').length > 0) {
+                    validateCpfCnpj();
+                } else {
+                    $('#cpfCnpjError').text('');
+                }
+            });
+
             $('#compradorForm').submit(function (e) {
                 var possuiIE = $('#possuiInscricaoEstadual').val();
                 if (possuiIE === 'Nao' || possuiIE === 'Isento') {
@@ -153,7 +163,37 @@
                     e.preventDefault(); // Impede o envio do formulário
                     alert('As senhas não conferem');
                 }
+
+                // Validação CPF/CNPJ
+                if (!validateCpfCnpj()) {
+                    e.preventDefault(); // Impede o envio do formulário
+                }
             });
+
+            function validateCpfCnpj() {
+                var tipoPessoa = $('#TipoPessoa').val();
+                var cpfCnpj = $('#CpfCnpj').val().replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+
+                var isValid = false;
+                var errorMessage = '';
+                if (tipoPessoa === 'Fisica' && cpfCnpj.length === 11) {
+                    isValid = true;
+                } else if (tipoPessoa === 'Fisica' && cpfCnpj.length !== 11) {
+                    errorMessage = 'CPF deve ter 11 caracteres';
+                } else if (tipoPessoa === 'Juridica' && cpfCnpj.length === 14) {
+                    isValid = true;
+                } else if (tipoPessoa === 'Juridica' && cpfCnpj.length !== 14) {
+                    errorMessage = 'CNPJ deve ter 14 caracteres';
+                }
+
+                if (!isValid && cpfCnpj.length > 0) {
+                    $('#cpfCnpjError').text(errorMessage);
+                } else {
+                    $('#cpfCnpjError').text('');
+                }
+
+                return isValid;
+            }
         });
     </script>
 }
