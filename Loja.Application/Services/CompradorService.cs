@@ -26,7 +26,6 @@ namespace Loja.Application.Services
                 CpfCnpj = c.CpfCnpj,
                 InscricaoEstadual = c.InscricaoEstadual,
                 Isento = c.Isento,
-                InscricaoEstadualPessoaFisica = c.InscricaoEstadualPessoaFisica,
                 Genero = c.Genero.ToString(),
                 DataNascimento = c.DataNascimento,
                 Senha = c.Senha,
@@ -52,7 +51,6 @@ namespace Loja.Application.Services
                 CpfCnpj = comprador.CpfCnpj,
                 InscricaoEstadual = comprador.InscricaoEstadual,
                 Isento = comprador.Isento,
-                InscricaoEstadualPessoaFisica = comprador.InscricaoEstadualPessoaFisica,
                 Genero = comprador.Genero.ToString(),
                 DataNascimento = comprador.DataNascimento,
                 Senha = comprador.Senha,
@@ -78,7 +76,7 @@ namespace Loja.Application.Services
                 errors.Add("Esta Inscrição Estadual já está cadastrada para outro Cliente");
             }
 
-            if (errors.Any())
+            if (errors.Count != 0)
             {
                 throw new AggregateException(errors.Select(e => new Exception(e)).ToList());
             }
@@ -94,7 +92,6 @@ namespace Loja.Application.Services
                 CpfCnpj = compradorDto.CpfCnpj,
                 InscricaoEstadual = compradorDto.InscricaoEstadual,
                 Isento = compradorDto.Isento,
-                InscricaoEstadualPessoaFisica = compradorDto.InscricaoEstadualPessoaFisica,
                 Genero = Enum.Parse<Genero>(compradorDto.Genero),
                 DataNascimento = compradorDto.DataNascimento,
                 Senha = compradorDto.Senha,
@@ -135,7 +132,6 @@ namespace Loja.Application.Services
             comprador.CpfCnpj = compradorDto.CpfCnpj;
             comprador.InscricaoEstadual = compradorDto.InscricaoEstadual;
             comprador.Isento = compradorDto.Isento;
-            comprador.InscricaoEstadualPessoaFisica = compradorDto.InscricaoEstadualPessoaFisica;
             comprador.Genero = Enum.Parse<Genero>(compradorDto.Genero);
             comprador.DataNascimento = compradorDto.DataNascimento;
             comprador.Senha = compradorDto.Senha;
