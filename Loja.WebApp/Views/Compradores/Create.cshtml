@@ -4,7 +4,7 @@
     ViewData["Title"] = "Cadastrar Novo Comprador";
 }
 
-<h1>Cadastrar Novo Comprajador</h1>
+<h1>Cadastrar Novo Comprador</h1>
 
 <h4>Comprador</h4>
 <hr />
@@ -27,6 +27,7 @@
                 <span asp-validation-for="Telefone" class="text-danger"></span>
             </div>
 
+            <h4>Informações Pessoais</h4>
             <div class="form-group">
                 <label asp-for="TipoPessoa" class="control-label">Tipo de Pessoa</label>
                 <select asp-for="TipoPessoa" class="form-control" data-toggle="tooltip" title="Selecione o tipo de Pessoa">
@@ -36,23 +37,27 @@
                 <span asp-validation-for="TipoPessoa" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label id="cpfCnpjLabel" asp-for="CpfCnpj" class="control-label">CPF/CNPJ</label>
-                <input asp-for="CpfCnpj" id="CpfCnpj" class="form-control" data-toggle="tooltip" title="Insira o CPF ou o CNPJ do Cliente" />
+                <label asp-for="CpfCnpj" class="control-label" id="labelCpfCnpj">CPF/CNPJ</label>
+                <input asp-for="CpfCnpj" class="form-control" data-toggle="tooltip" title="Insira o CPF ou o CNPJ do Cliente" />
                 <span asp-validation-for="CpfCnpj" class="text-danger"></span>
                 <span id="cpfCnpjError" class="text-danger"></span>
             </div>
-            <div class="form-group fisica-only">
-                <label class="control-label">Possui Inscrição Estadual para Pessoa Física?</label>
-                <select id="possuiInscricaoEstadual" class="form-control" data-toggle="tooltip" title="Possui Inscrição Estadual para Pessoa Física?">
-                    <option value="Nao">Não</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Isento">Isento</option>
-                </select>
+            <div class="form-group" id="divPossuiInscricaoEstadual">
+                <label>Possui Inscrição Estadual para Pessoa Física?</label>
+                <div>
+                    <input type="radio" id="possuiInscricaoEstadualSim" name="possuiInscricaoEstadual" value="Sim">
+                    <label for="possuiInscricaoEstadualSim">Sim</label>
+                    <input type="radio" id="possuiInscricaoEstadualNao" name="possuiInscricaoEstadual" value="Nao" checked>
+                    <label for="possuiInscricaoEstadualNao">Não</label>
+                    <input type="radio" id="possuiInscricaoEstadualIsento" name="possuiInscricaoEstadual" value="Isento">
+                    <label for="possuiInscricaoEstadualIsento">Isento</label>
+                </div>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="divInscricaoEstadual">
                 <label asp-for="InscricaoEstadual" class="control-label">Inscrição Estadual</label>
                 <input asp-for="InscricaoEstadual" class="form-control" data-toggle="tooltip" title="Inscrição Estadual do Cliente, selecionar Isento caso assim for" />
                 <span asp-validation-for="InscricaoEstadual" class="text-danger"></span>
+                <span id="inscricaoEstadualError" class="text-danger"></span>
             </div>
             <div class="form-group fisica-only">
                 <label asp-for="Genero" class="control-label">Gênero</label>
@@ -69,6 +74,8 @@
                 <input asp-for="DataNascimento" type="date" class="form-control" data-toggle="tooltip" title="Data de nascimento do Cliente" />
                 <span asp-validation-for="DataNascimento" class="text-danger"></span>
             </div>
+
+            <h4>Senha de Acesso</h4>
             <div class="form-group">
                 <label asp-for="Senha" class="control-label">Senha</label>
                 <input asp-for="Senha" type="password" class="form-control" data-toggle="tooltip" title="Cadastre a senha de acesso do seu Cliente" minlength="8" maxlength="15" />
@@ -79,12 +86,12 @@
                 <input asp-for="ConfirmacaoSenha" type="password" class="form-control" data-toggle="tooltip" title="Confirmação de Senha" minlength="8" maxlength="15" />
                 <span asp-validation-for="ConfirmacaoSenha" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input asp-for="Bloqueado" class="form-check-input" type="checkbox" data-toggle="tooltip" title="Bloqueio o acesso do Cliente na sua Loja" />
                 <label asp-for="Bloqueado" class="form-check-label">Bloqueado</label>
             </div>
             <div class="form-group">
-                <input type="hidden" asp-for="Isento" />
                 <input type="submit" value="Salvar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary">Voltar para a lista</a>
             </div>
@@ -107,75 +114,29 @@
             $('#TipoPessoa').change(function () {
                 var tipoPessoa = $(this).val();
                 if (tipoPessoa === 'Fisica') {
-                    $('#cpfCnpjLabel').text('CPF');
                     $('#CpfCnpj').mask('000.000.000-00', { reverse: true });
+                    $('#labelCpfCnpj').text('CPF');
                     $('.fisica-only').show();
-                    $('#possuiInscricaoEstadual').closest('.form-group').show();
-                    $('#InscricaoEstadual').closest('.form-group').hide();
+                    $('.juridica-only').hide();
+                    $('#divPossuiInscricaoEstadual').show();
                 } else if (tipoPessoa === 'Juridica') {
-                    $('#cpfCnpjLabel').text('CNPJ');
                     $('#CpfCnpj').mask('00.000.000/0000-00', { reverse: true });
+                    $('#labelCpfCnpj').text('CNPJ');
                     $('.fisica-only').hide();
-                    $('#possuiInscricaoEstadual').closest('.form-group').hide();
-                    $('#InscricaoEstadual').closest('.form-group').show();
-                    $('#Isento').val(false); // Set Isento to false for Juridica
+                    $('.juridica-only').show();
+                    $('#divPossuiInscricaoEstadual').hide();
+                    $('#divInscricaoEstadual').show();
                 }
-                $('#cpfCnpjError').text('');
+                $('#cpfCnpjError').text(''); // Clear error message
+                $('#inscricaoEstadualError').text(''); // Clear error message
             }).trigger('change');
 
-            $('#possuiInscricaoEstadual').change(function () {
-                var possuiIE = $(this).val();
-                if (possuiIE === 'Nao') {
-                    $('#InscricaoEstadual').prop('disabled', true).val('');
-                    // Update the backend field 'Isento'
-                    $('#Isento').val(true);
-                } else if (possuiIE === 'Sim') {
-                    $('#InscricaoEstadual').prop('disabled', false);
-                    // Update the backend field 'Isento'
-                    $('#Isento').val(false);
-                } else if (possuiIE === 'Isento') {
-                    $('#InscricaoEstadual').prop('disabled', true).val('');
-                    // Update the backend field 'Isento'
-                    $('#Isento').val(true);
-                }
-            }).trigger('change');
-
-            $('#CpfCnpj').on('blur', function () {
-                if ($('#CpfCnpj').val().replace(/\D/g, '').length > 0) {
-                    validateCpfCnpj();
-                } else {
-                    $('#cpfCnpjError').text('');
-                }
-            });
-
-            $('#compradorForm').submit(function (e) {
-                var possuiIE = $('#possuiInscricaoEstadual').val();
-                if (possuiIE === 'Nao' || possuiIE === 'Isento') {
-                    $('#Isento').val(true);
-                } else {
-                    $('#Isento').val(false);
-                }
-
-                var senha = $('#Senha').val();
-                var confirmacaoSenha = $('#ConfirmacaoSenha').val();
-
-                if (senha !== confirmacaoSenha) {
-                    e.preventDefault(); // Impede o envio do formulário
-                    alert('As senhas não conferem');
-                }
-
-                // Validação CPF/CNPJ
-                if (!validateCpfCnpj()) {
-                    e.preventDefault(); // Impede o envio do formulário
-                }
-            });
-
-            function validateCpfCnpj() {
+            $('#CpfCnpj').blur(function () {
                 var tipoPessoa = $('#TipoPessoa').val();
-                var cpfCnpj = $('#CpfCnpj').val().replace(/\D/g, ''); // Remove todos os caracteres não numéricos
-
+                var cpfCnpj = $(this).val().replace(/\D/g, '');
                 var isValid = false;
                 var errorMessage = '';
+
                 if (tipoPessoa === 'Fisica' && cpfCnpj.length === 11) {
                     isValid = true;
                 } else if (tipoPessoa === 'Fisica' && cpfCnpj.length !== 11) {
@@ -186,14 +147,41 @@
                     errorMessage = 'CNPJ deve ter 14 caracteres';
                 }
 
-                if (!isValid && cpfCnpj.length > 0) {
+                if (!isValid) {
                     $('#cpfCnpjError').text(errorMessage);
                 } else {
                     $('#cpfCnpjError').text('');
                 }
+            });
 
-                return isValid;
-            }
+            $('#InscricaoEstadual').blur(function () {
+                var inscricaoEstadual = $(this).val().replace(/\D/g, '');
+                if (inscricaoEstadual.length !== 12) {
+                    $('#inscricaoEstadualError').text('Inscrição Estadual deve ter 12 caracteres');
+                } else {
+                    $('#inscricaoEstadualError').text('');
+                }
+            });
+
+            $('input[name="possuiInscricaoEstadual"]').change(function () {
+                if (this.value === 'Sim') {
+                    $('#InscricaoEstadual').prop('disabled', false);
+                    $('input[name="Isento"]').val('False');
+                } else {
+                    $('#InscricaoEstadual').prop('disabled', true);
+                    $('input[name="Isento"]').val('True');
+                }
+            }).trigger('change');
+
+            $('#compradorForm').submit(function (e) {
+                var senha = $('#Senha').val();
+                var confirmacaoSenha = $('#ConfirmacaoSenha').val();
+
+                if (senha !== confirmacaoSenha) {
+                    e.preventDefault(); // Impede o envio do formulário
+                    alert('As senhas não conferem');
+                }
+            });
         });
     </script>
 }
