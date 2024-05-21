@@ -36,24 +36,22 @@
                 <span asp-validation-for="TipoPessoa" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CpfCnpj" class="control-label">CPF/CNPJ</label>
+                <label id="cpfCnpjLabel" asp-for="CpfCnpj" class="control-label">CPF/CNPJ</label>
                 <input asp-for="CpfCnpj" class="form-control" data-toggle="tooltip" title="Insira o CPF ou o CNPJ do Cliente" />
                 <span asp-validation-for="CpfCnpj" class="text-danger"></span>
+            </div>
+            <div class="form-group fisica-only">
+                <label class="control-label">Possui Inscrição Estadual para Pessoa Física?</label>
+                <select id="possuiInscricaoEstadual" class="form-control" data-toggle="tooltip" title="Possui Inscrição Estadual para Pessoa Física?">
+                    <option value="Nao">Não</option>
+                    <option value="Sim">Sim</option>
+                    <option value="Isento">Isento</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="InscricaoEstadual" class="control-label">Inscrição Estadual</label>
                 <input asp-for="InscricaoEstadual" class="form-control" data-toggle="tooltip" title="Inscrição Estadual do Cliente, selecionar Isento caso assim for" />
                 <span asp-validation-for="InscricaoEstadual" class="text-danger"></span>
-            </div>
-            <div class="form-check">
-                <input asp-for="Isento" class="form-check-input" type="checkbox" data-toggle="tooltip" title="Selecionar Isento caso assim for" />
-                <label asp-for="Isento" class="form-check-label">Isento</label>
-                <span asp-validation-for="Isento" class="text-danger"></span>
-            </div>
-            <div class="form-check">
-                <input asp-for="InscricaoEstadualPessoaFisica" class="form-check-input" type="checkbox" data-toggle="tooltip" title="Inscrição Estadual para Pessoa Física" />
-                <label asp-for="InscricaoEstadualPessoaFisica" class="form-check-label">Inscrição Estadual para Pessoa Física</label>
-                <span asp-validation-for="InscricaoEstadualPessoaFisica" class="text-danger"></span>
             </div>
             <div class="form-group fisica-only">
                 <label asp-for="Genero" class="control-label">Gênero</label>
@@ -85,6 +83,7 @@
                 <label asp-for="Bloqueado" class="form-check-label">Bloqueado</label>
             </div>
             <div class="form-group">
+                <input type="hidden" asp-for="Isento" />
                 <input type="submit" value="Salvar" class="btn btn-primary" />
                 <a asp-action="Index" class="btn btn-secondary">Voltar para a lista</a>
             </div>
@@ -107,25 +106,46 @@
             $('#TipoPessoa').change(function () {
                 var tipoPessoa = $(this).val();
                 if (tipoPessoa === 'Fisica') {
+                    $('#cpfCnpjLabel').text('CPF');
                     $('#CpfCnpj').mask('000.000.000-00', { reverse: true });
                     $('.fisica-only').show();
-                    $('.juridica-only').hide();
+                    $('#possuiInscricaoEstadual').closest('.form-group').show();
+                    $('#InscricaoEstadual').closest('.form-group').hide();
                 } else if (tipoPessoa === 'Juridica') {
+                    $('#cpfCnpjLabel').text('CNPJ');
                     $('#CpfCnpj').mask('00.000.000/0000-00', { reverse: true });
                     $('.fisica-only').hide();
-                    $('.juridica-only').show();
+                    $('#possuiInscricaoEstadual').closest('.form-group').hide();
+                    $('#InscricaoEstadual').closest('.form-group').show();
+                    $('#Isento').val(false); // Set Isento to false for Juridica
                 }
             }).trigger('change');
 
-            $('#Isento').change(function () {
-                if ($(this).is(':checked')) {
-                    $('#InscricaoEstadual').prop('disabled', true);
-                } else {
+            $('#possuiInscricaoEstadual').change(function () {
+                var possuiIE = $(this).val();
+                if (possuiIE === 'Nao') {
+                    $('#InscricaoEstadual').prop('disabled', true).val('');
+                    // Update the backend field 'Isento'
+                    $('#Isento').val(true);
+                } else if (possuiIE === 'Sim') {
                     $('#InscricaoEstadual').prop('disabled', false);
+                    // Update the backend field 'Isento'
+                    $('#Isento').val(false);
+                } else if (possuiIE === 'Isento') {
+                    $('#InscricaoEstadual').prop('disabled', true).val('');
+                    // Update the backend field 'Isento'
+                    $('#Isento').val(true);
                 }
             }).trigger('change');
 
             $('#compradorForm').submit(function (e) {
+                var possuiIE = $('#possuiInscricaoEstadual').val();
+                if (possuiIE === 'Nao' || possuiIE === 'Isento') {
+                    $('#Isento').val(true);
+                } else {
+                    $('#Isento').val(false);
+                }
+
                 var senha = $('#Senha').val();
                 var confirmacaoSenha = $('#ConfirmacaoSenha').val();
 
