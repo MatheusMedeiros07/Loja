@@ -28,22 +28,22 @@ Esta é uma aplicação para gestão de cadastro de clientes, desenvolvida utili
 
 ## Requisitos
 
-- .NET 6.0 SDK ou superior
+- .NET 8.0 SDK 
 - MySQL Server
 
 ## Configuração do Ambiente
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/seu-usuario/sua-aplicacao.git
-    cd sua-aplicacao
+    git clone https://github.com/MatheusMedeiros07/Loja.git
+    cd Loja
     ```
 
 2. Configure a string de conexão com o banco de dados no arquivo `appsettings.json`:
     ```json
     {
       "ConnectionStrings": {
-        "DefaultConnection": "Server=localhost;Database=GestaoClientes;User Id=root;Password=sua-senha;"
+        "DefaultConnection": "Server=localhost;Database=loja;User Id=root;Password=sua-senha;"
       },
       "Logging": {
         "LogLevel": {
@@ -61,7 +61,9 @@ Esta é uma aplicação para gestão de cadastro de clientes, desenvolvida utili
 
 Navegue até a pasta `SQL` e execute o script `create_database.sql` no seu MySQL Server. Você pode usar o MySQL Workbench ou qualquer outro cliente MySQL para executar o script.
 
-### Script para criação do banco de dados que está na pasta SQL na raiz do projeto (`create_database.sql`):
+Na pasta também possui um script com INSERT de dados para testes, caso seja necessário pode executar, são dados ficticios para testes.
+
+### Exemplo de Script SQL (`create_database.sql`):
 
 ```sql
 -- Uso do banco de dados
@@ -89,5 +91,4 @@ CREATE TABLE Cliente (
     CHECK (Genero IN ('Feminino', 'Masculino', 'Outro') OR Genero IS NULL)
 );
 
-### Script para Inserção de dados para teste que está na pasta SQL na raiz do projeto (`INSERT de dados ficticios para testes`):
 
