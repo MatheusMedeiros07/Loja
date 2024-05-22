@@ -57,7 +57,7 @@ namespace Loja.Application.Services
             };
         }
 
-        public async Task AddCompradorAsync(CompradorDto compradorDto)
+        public async Task<List<string>> AddCompradorAsync(CompradorDto compradorDto)
         {
             var errors = new List<string>();
 
@@ -68,7 +68,7 @@ namespace Loja.Application.Services
 
             if (await _compradorRepository.EmailExistsAsync(compradorDto.Email))
             {
-                errors.Add("Este e-mail já está cadastrado para outro Cliente");
+                errors.Add("Este E-mail já está cadastrado para outro Cliente");
             }
 
             if (!compradorDto.Isento && !string.IsNullOrEmpty(compradorDto.InscricaoEstadual) && await _compradorRepository.InscricaoEstadualExistsAsync(compradorDto.InscricaoEstadual))
@@ -76,28 +76,28 @@ namespace Loja.Application.Services
                 errors.Add("Esta Inscrição Estadual já está cadastrada para outro Cliente");
             }
 
-            if (errors.Count != 0)
+            if (errors.Count == 0)
             {
-                throw new AggregateException(errors.Select(e => new Exception(e)).ToList());
+                var comprador = new Comprador
+                {
+                    NomeRazaoSocial = compradorDto.NomeRazaoSocial,
+                    Email = compradorDto.Email,
+                    Telefone = compradorDto.Telefone,
+                    DataCadastro = DateTime.Now, // Insere a data atual
+                    Bloqueado = compradorDto.Bloqueado,
+                    TipoPessoa = Enum.Parse<TipoPessoa>(compradorDto.TipoPessoa),
+                    CpfCnpj = compradorDto.CpfCnpj,
+                    InscricaoEstadual = compradorDto.InscricaoEstadual,
+                    Isento = compradorDto.Isento,
+                    Genero = Enum.Parse<Genero>(compradorDto.Genero),
+                    DataNascimento = compradorDto.DataNascimento,
+                    Senha = compradorDto.Senha,
+                };
+
+                await _compradorRepository.AddAsync(comprador);
             }
 
-            var comprador = new Comprador
-            {
-                NomeRazaoSocial = compradorDto.NomeRazaoSocial,
-                Email = compradorDto.Email,
-                Telefone = compradorDto.Telefone,
-                DataCadastro = DateTime.Now, // Insere a data atual
-                Bloqueado = compradorDto.Bloqueado,
-                TipoPessoa = Enum.Parse<TipoPessoa>(compradorDto.TipoPessoa),
-                CpfCnpj = compradorDto.CpfCnpj,
-                InscricaoEstadual = compradorDto.InscricaoEstadual,
-                Isento = compradorDto.Isento,
-                Genero = Enum.Parse<Genero>(compradorDto.Genero),
-                DataNascimento = compradorDto.DataNascimento,
-                Senha = compradorDto.Senha,
-            };
-
-            await _compradorRepository.AddAsync(comprador);
+            return errors;
         }
 
         public async Task<bool> CpfCnpjExistsAsync(string cpfCnpj)

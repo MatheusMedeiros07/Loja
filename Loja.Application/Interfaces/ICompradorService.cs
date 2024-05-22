@@ -6,7 +6,7 @@ namespace Loja.Application.Interfaces
     {
         Task<List<CompradorDto>> GetAllCompradoresAsync();
         Task<CompradorDto?> GetCompradorByIdAsync(int id);
-        Task AddCompradorAsync(CompradorDto comprador);
+        Task<List<string>> AddCompradorAsync(CompradorDto compradorDto);
         Task UpdateCompradorAsync(CompradorDto comprador);
         Task DeleteCompradorAsync(int id);
         Task<bool> CpfCnpjExistsAsync(string cpfCnpj);
