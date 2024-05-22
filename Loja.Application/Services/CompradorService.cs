@@ -120,8 +120,7 @@ namespace Loja.Application.Services
             var comprador = await _compradorRepository.GetByIdAsync(compradorDto.Id);
             if (comprador == null)
             {
-                // Handle the case where the comprador doesn't exist
-                return;
+                throw new KeyNotFoundException($"Cliente com ID {compradorDto.Id} não foi encontrado.");
             }
 
             comprador.NomeRazaoSocial = compradorDto.NomeRazaoSocial;
