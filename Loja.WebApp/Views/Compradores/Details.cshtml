@@ -7,78 +7,131 @@
 <h1>Detalhes do Comprador</h1>
 
 <div>
-    <h4>Comprador</h4>
+    <h4>Cliente</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NomeRazaoSocial)
+        <dt class="col-sm-4">
+            Nome/Razão Social
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-8">
             @Html.DisplayFor(model => model.NomeRazaoSocial)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
+        <dt class="col-sm-4">
+            E-mail
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-8">
             @Html.DisplayFor(model => model.Email)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Telefone)
+        <dt class="col-sm-4">
+            Telefone
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Telefone)
+        <dd class="col-sm-8">
+            <span id="telefone">@Html.DisplayFor(model => model.Telefone)</span>
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoPessoa)
+    </dl>
+
+    <h4>Informações Pessoais</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">
+            Tipo de Pessoa
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.TipoPessoa)
+        <dd class="col-sm-8">
+            @(Model.TipoPessoa == "Juridica" ? "Jurídica" : "Física")
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.CpfCnpj)
+        <dt class="col-sm-4">
+            @(Model.TipoPessoa == "Juridica" ? "CNPJ" : "CPF")
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CpfCnpj)
+        <dd class="col-sm-8">
+            <span id="cpfCnpj">@Html.DisplayFor(model => model.CpfCnpj)</span>
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.InscricaoEstadual)
+        <dt class="col-sm-4">
+            Inscrição Estadual
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.InscricaoEstadual)
+        <dd class="col-sm-8">
+            <span id="inscricaoEstadual">@Html.DisplayFor(model => model.InscricaoEstadual)</span>
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Isento)
+        <dt class="col-sm-4">
+            Isento de Inscrição Estadual
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Isento)
+        <dd class="col-sm-8">
+            @(Model.Isento == true ? "Sim" : Model.Isento == false ? "Não" : "Sim")
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Genero)
+        @if (Model.TipoPessoa != "Juridica")
+        {
+            <dt class="col-sm-4">
+                Gênero
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Genero)
+            </dd>
+            <dt class="col-sm-4">
+                Data de Nascimento
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DataNascimento)
+            </dd>
+        }
+    </dl>
+
+    <h4>Situação do Cliente</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">
+            Bloqueado
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Genero)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DataNascimento)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DataNascimento)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Bloqueado)
-        </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-8">
             @Html.DisplayFor(model => model.Bloqueado)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Senha)
+    </dl>
+
+    <h4>Senha de Acesso</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-4">
+            Senha
+            <i class="fa fa-info-circle fa-lg ml-2" data-toggle="tooltip" data-placement="top" title="Por questões de segurança a senha do cliente não pode ser exibida"></i>
         </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Senha)
-        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Editar</a> |
-    <a asp-action="Index">Voltar para a lista</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar para a lista</a>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $('#telefone').text(function (index, text) {
+                return text.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            });
+
+            $('#cpfCnpj').text(function (index, text) {
+                if (text.length === 11) {
+                    return text.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                } else if (text.length === 14) {
+                    return text.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+                } else {
+                    return text;
+                }
+            });
+
+            $('#inscricaoEstadual').text(function (index, text) {
+                return text.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1.$2.$3.$4');
+            });
+
+            // Show tooltip on click
+            $('.fa-info-circle').on('click', function () {
+                $(this).tooltip('show');
+                setTimeout(function () {
+                    $('.fa-info-circle').tooltip('hide');
+                }, 3000); // Hide after 3 seconds
+            });
+        });
+    </script>
+}
