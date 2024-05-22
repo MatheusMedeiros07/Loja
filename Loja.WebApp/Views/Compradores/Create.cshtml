@@ -103,6 +103,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -185,6 +187,16 @@
                     alert('As senhas não conferem');
                 }
             });
-        });
+
+        @if (TempData["Errors"] != null)
+        {
+            <text>
+                            var errors = @Html.Raw(Json.Serialize(TempData["Errors"]));
+                errors.forEach(function (error) {
+                    toastr.error(error);
+                });
+            </text>
+        }
+                });
     </script>
 }
