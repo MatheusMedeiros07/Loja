@@ -47,7 +47,7 @@
                 <div>
                     <input type="radio" id="possuiInscricaoEstadualSim" name="possuiInscricaoEstadual" value="Sim">
                     <label for="possuiInscricaoEstadualSim">Sim</label>
-                    <input type="radio" id="possuiInscricaoEstadualNao" name="possuiInscricaoEstadual" value="Nao" checked>
+                    <input type="radio" id="possuiInscricaoEstadualNao" name="possuiInscricaoEstadual" value="Nao">
                     <label for="possuiInscricaoEstadualNao">Não</label>
                     <input type="radio" id="possuiInscricaoEstadualIsento" name="possuiInscricaoEstadual" value="Isento">
                     <label for="possuiInscricaoEstadualIsento">Isento</label>
@@ -55,7 +55,7 @@
             </div>
             <div class="form-group" id="divInscricaoEstadual">
                 <label asp-for="InscricaoEstadual" class="control-label">Inscrição Estadual</label>
-                <input asp-for="InscricaoEstadual" class="form-control" data-toggle="tooltip" title="Inscrição Estadual do Cliente, selecionar Isento caso assim for" />
+                <input asp-for="InscricaoEstadual" class="form-control" data-toggle="tooltip" title="Inscrição Estadual do Cliente" />
                 <span asp-validation-for="InscricaoEstadual" class="text-danger"></span>
                 <span id="inscricaoEstadualError" class="text-danger"></span>
             </div>
@@ -106,6 +106,7 @@
             <!-- Hidden fields to hold current password and confirm password values -->
             <input type="hidden" id="currentSenha" value="@Model.Senha" />
             <input type="hidden" id="currentConfirmacaoSenha" value="@Model.ConfirmacaoSenha" />
+            <input type="hidden" id="isento" name="Isento" value="@Model.Isento" />
         </form>
     </div>
 </div>
@@ -139,7 +140,7 @@
                     $('.juridica-only').show();
                     $('#divPossuiInscricaoEstadual').hide();
                     $('#divInscricaoEstadual').show();
-                    $('input[name="Isento"]').val('False');
+                    $('#isento').val('False');
                 }
                 $('#cpfCnpjError').text(''); // Clear error message
                 $('#inscricaoEstadualError').text(''); // Clear error message
@@ -180,12 +181,29 @@
             $('input[name="possuiInscricaoEstadual"]').change(function () {
                 if (this.value === 'Sim') {
                     $('#InscricaoEstadual').prop('disabled', false);
-                    $('input[name="Isento"]').val('False');
+                    $('#isento').val('False');
+                    $('#divInscricaoEstadual').show();
                 } else {
                     $('#InscricaoEstadual').prop('disabled', true);
-                    $('input[name="Isento"]').val('True');
+                    $('#isento').val('True');
+                    $('#divInscricaoEstadual').hide();
                 }
-            }).trigger('change');
+            });
+
+            function setPossuiInscricaoEstadual() {
+                var isentoValue = '@Model.Isento'.toLowerCase();
+                if (isentoValue === 'false') {
+                    $('#possuiInscricaoEstadualSim').prop('checked', true);
+                    $('#InscricaoEstadual').prop('disabled', false);
+                    $('#divInscricaoEstadual').show();
+                } else {
+                    $('#possuiInscricaoEstadualNao').prop('checked', true);
+                    $('#InscricaoEstadual').prop('disabled', true);
+                    $('#divInscricaoEstadual').hide();
+                }
+            }
+
+            setPossuiInscricaoEstadual();
 
             $('#redefinirSenhaBtn').click(function () {
                 if ($('.senha-fields').is(':visible')) {
@@ -239,6 +257,11 @@
                 } else {
                     $('#senhaError').text('');
                     $('#confirmacaoSenhaError').text('');
+                }
+
+                if (!$('.senha-fields').is(':visible')) {
+                    $('#Senha').val($('#currentSenha').val());
+                    $('#ConfirmacaoSenha').val($('#currentConfirmacaoSenha').val());
                 }
             });
         });
