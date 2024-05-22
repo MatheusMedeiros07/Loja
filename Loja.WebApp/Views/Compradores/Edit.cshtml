@@ -82,17 +82,16 @@
             </div>
 
             <h4>Senha de Acesso</h4>
-            <div class="form-group">
-                <input type="checkbox" id="redefinirSenha" />
-                <label for="redefinirSenha">Redefinir Senha do Cliente</label>
+            <div class="form-group mb-2">
+                <button type="button" id="redefinirSenhaBtn" class="btn btn-secondary mb-2">Redefinir Senha do Cliente</button>
             </div>
-            <div class="form-group senha-fields">
+            <div class="form-group senha-fields" style="display: none;">
                 <label asp-for="Senha" class="control-label">Senha</label>
                 <input asp-for="Senha" type="password" class="form-control" data-toggle="tooltip" title="Cadastre a senha de acesso do seu Cliente" minlength="8" maxlength="15" />
                 <span asp-validation-for="Senha" class="text-danger"></span>
                 <span id="senhaError" class="text-danger"></span>
             </div>
-            <div class="form-group senha-fields mb-4">
+            <div class="form-group senha-fields mb-4" style="display: none;">
                 <label asp-for="ConfirmacaoSenha" class="control-label">Confirmação de Senha</label>
                 <input asp-for="ConfirmacaoSenha" type="password" class="form-control" data-toggle="tooltip" title="Confirmação de Senha" minlength="8" maxlength="15" />
                 <span asp-validation-for="ConfirmacaoSenha" class="text-danger"></span>
@@ -188,21 +187,8 @@
                 }
             }).trigger('change');
 
-            $('#redefinirSenha').change(function () {
-                if ($(this).is(':checked')) {
-                    $('.senha-fields').show();
-                    $('#Senha').attr('data-val', 'true');
-                    $('#Senha').attr('data-val-required', 'O campo Senha é obrigatório');
-                    $('#Senha').attr('data-val-length', 'A Senha deve ter entre 8 e 15 caracteres');
-                    $('#Senha').attr('data-val-length-min', '8');
-                    $('#Senha').attr('data-val-length-max', '15');
-                    $('#ConfirmacaoSenha').attr('data-val', 'true');
-                    $('#ConfirmacaoSenha').attr('data-val-required', 'O campo Confirmação de Senha é obrigatório');
-                    $('#ConfirmacaoSenha').attr('data-val-equalto', 'As senhas não conferem');
-                    $('#ConfirmacaoSenha').attr('data-val-equalto-other', '*[name=Senha]');
-                    $('#Senha').val('');
-                    $('#ConfirmacaoSenha').val('');
-                } else {
+            $('#redefinirSenhaBtn').click(function () {
+                if ($('.senha-fields').is(':visible')) {
                     $('.senha-fields').hide();
                     $('#Senha').removeAttr('data-val');
                     $('#Senha').removeAttr('data-val-required');
@@ -215,21 +201,38 @@
                     $('#ConfirmacaoSenha').removeAttr('data-val-equalto-other');
                     $('#Senha').val($('#currentSenha').val());
                     $('#ConfirmacaoSenha').val($('#currentConfirmacaoSenha').val());
+                    $(this).text('Redefinir Senha do Cliente');
+                    $(this).addClass('mb-2');
+                } else {
+                    $('.senha-fields').show();
+                    $('#Senha').attr('data-val', 'true');
+                    $('#Senha').attr('data-val-required', 'O campo Senha é obrigatório');
+                    $('#Senha').attr('data-val-length', 'A Senha deve ter entre 8 e 15 caracteres');
+                    $('#Senha').attr('data-val-length-min', '8');
+                    $('#Senha').attr('data-val-length-max', '15');
+                    $('#ConfirmacaoSenha').attr('data-val', 'true');
+                    $('#ConfirmacaoSenha').attr('data-val-required', 'O campo Confirmação de Senha é obrigatório');
+                    $('#ConfirmacaoSenha').attr('data-val-equalto', 'As senhas não conferem');
+                    $('#ConfirmacaoSenha').attr('data-val-equalto-other', '*[name=Senha]');
+                    $('#Senha').val('');
+                    $('#ConfirmacaoSenha').val('');
+                    $(this).text('Cancelar Redefinição de Senha');
+                    $(this).removeClass('mb-2');
                 }
-            }).trigger('change');
+            });
 
             $('#compradorForm').submit(function (e) {
                 var senha = $('#Senha').val();
                 var confirmacaoSenha = $('#ConfirmacaoSenha').val();
 
-                if ($('#redefinirSenha').is(':checked') && !senha) {
+                if ($('.senha-fields').is(':visible') && !senha) {
                     e.preventDefault(); // Impede o envio do formulário
                     toastr.error('O campo Senha é obrigatório');
-                } else if ($('#redefinirSenha').is(':checked') && !confirmacaoSenha) {
+                } else if ($('.senha-fields').is(':visible') && !confirmacaoSenha) {
                     e.preventDefault(); // Impede o envio do formulário
                     $('#confirmacaoSenhaError').text('O campo Confirmação de Senha é obrigatório');
                     toastr.error('O campo Confirmação de Senha é obrigatório');
-                } else if ($('#redefinirSenha').is(':checked') && senha !== confirmacaoSenha) {
+                } else if ($('.senha-fields').is(':visible') && senha !== confirmacaoSenha) {
                     e.preventDefault(); // Impede o envio do formulário
                     $('#confirmacaoSenhaError').text('As senhas não conferem');
                     toastr.error('As senhas não conferem');
