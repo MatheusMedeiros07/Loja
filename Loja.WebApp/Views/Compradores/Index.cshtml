@@ -129,7 +129,7 @@
                     <td>
                         @item.Email
                     </td>
-                    <td>
+                    <td class="telefone">
                         @item.Telefone
                     </td>
                     <td>
@@ -200,6 +200,7 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <script>
         $(document).ready(function () {
             let selectedIds = [];
@@ -281,6 +282,18 @@
                 var filterId = $(this).data('filter');
                 $('#' + filterId).val('');
                 $('#filter-form-fields').submit();
+            });
+
+            // Apply mask to the phone filter field
+            $('#filter-phone').mask('(00) 00000-0000');
+
+            // Apply mask to the phone fields in the table
+            $('.telefone').each(function () {
+                var telefone = $(this).text().trim();
+                if (telefone.length === 11) {
+                    telefone = telefone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                }
+                $(this).text(telefone);
             });
         });
     </script>
