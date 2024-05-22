@@ -183,10 +183,14 @@
                     $('#InscricaoEstadual').prop('disabled', false);
                     $('#isento').val('False');
                     $('#divInscricaoEstadual').show();
+                    $('#InscricaoEstadual').attr('data-val', 'true');
+                    $('#InscricaoEstadual').attr('data-val-required', 'O campo Inscrição Estadual é obrigatório');
                 } else {
                     $('#InscricaoEstadual').prop('disabled', true);
                     $('#isento').val('True');
                     $('#divInscricaoEstadual').hide();
+                    $('#InscricaoEstadual').removeAttr('data-val');
+                    $('#InscricaoEstadual').removeAttr('data-val-required');
                 }
             });
 
@@ -196,14 +200,34 @@
                     $('#possuiInscricaoEstadualSim').prop('checked', true);
                     $('#InscricaoEstadual').prop('disabled', false);
                     $('#divInscricaoEstadual').show();
+                    $('#InscricaoEstadual').attr('data-val', 'true');
+                    $('#InscricaoEstadual').attr('data-val-required', 'O campo Inscrição Estadual é obrigatório');
                 } else {
                     $('#possuiInscricaoEstadualNao').prop('checked', true);
                     $('#InscricaoEstadual').prop('disabled', true);
                     $('#divInscricaoEstadual').hide();
+                    $('#InscricaoEstadual').removeAttr('data-val');
+                    $('#InscricaoEstadual').removeAttr('data-val-required');
                 }
+                $('input[name="Isento"]').val(isentoValue); // Ensure the correct value is set
             }
 
             setPossuiInscricaoEstadual();
+
+            $('#compradorForm').submit(function (e) {
+                var selectedValue = $('input[name="possuiInscricaoEstadual"]:checked').val();
+                if (selectedValue === 'Sim') {
+                    $('#isento').val('False');
+                } else {
+                    $('#isento').val('True');
+                }
+
+                // Validate Inscricao Estadual if it's enabled
+                if ($('#InscricaoEstadual').is(':enabled') && !$('#InscricaoEstadual').val()) {
+                    e.preventDefault();
+                    toastr.error('O campo Inscrição Estadual é obrigatório');
+                }
+            });
 
             $('#redefinirSenhaBtn').click(function () {
                 if ($('.senha-fields').is(':visible')) {
