@@ -72,43 +72,26 @@ namespace Loja.WebApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CompradorDto comprador)
+        public async Task<IActionResult> Create(CompradorDto compradorDto)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
+                var errors = await _compradorService.AddCompradorAsync(compradorDto);
+
+                if (errors.Count != 0)
                 {
-                    await _compradorService.AddCompradorAsync(comprador);
-                    return RedirectToAction(nameof(Index));
+
+                    TempData["Errors"] = errors;
+                    return View(compradorDto);
                 }
-                catch (AggregateException aggEx)
-                {
-                    foreach (var ex in aggEx.InnerExceptions)
-                    {
-                        if (ex.Message.Contains("CPF/CNPJ"))
-                        {
-                            ModelState.AddModelError("CpfCnpj", ex.Message);
-                        }
-                        else if (ex.Message.Contains("e-mail"))
-                        {
-                            ModelState.AddModelError("Email", ex.Message);
-                        }
-                        else if (ex.Message.Contains("Inscrição Estadual"))
-                        {
-                            ModelState.AddModelError("InscricaoEstadual", ex.Message);
-                        }
-                        else
-                        {
-                            ModelState.AddModelError("", ex.Message);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Ocorreu um erro ao tentar adicionar o cliente. Por favor, tente novamente.");
-                }
+
+                return RedirectToAction(nameof(Index));
             }
-            return View(comprador);
+            catch (Exception ex)
+            {
+                TempData["Errors"] = new List<string> { ex.Message };
+                return View(compradorDto);
+            }
         }
 
 
